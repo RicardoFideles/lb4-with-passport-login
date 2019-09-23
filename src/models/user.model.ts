@@ -1,16 +1,22 @@
 import { Entity, model, property } from '@loopback/repository';
-import { UserProfile, securityId } from '@loopback/security';
-
-
-@model({ settings: {} })
-export class User extends Entity implements UserProfile {
-  [attribute: string]: any;
-  [securityId]: string;
-
+@model({
+  settings: {
+    indexes: {
+      uniqueEmail: {
+        keys: {
+          email: 1,
+        },
+        options: {
+          unique: true,
+        },
+      },
+    },
+  },
+})
+export class User extends Entity {
   @property({
     type: 'string',
     id: true,
-    generated: true,
   })
   id: string;
 
@@ -18,13 +24,23 @@ export class User extends Entity implements UserProfile {
     type: 'string',
     required: true,
   })
-  name: string;
+  email: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  email: string;
+  password: string;
+
+  @property({
+    type: 'string',
+  })
+  firstName?: string;
+
+  @property({
+    type: 'string',
+  })
+  lastName?: string;
 
 
   constructor(data?: Partial<User>) {

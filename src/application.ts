@@ -1,5 +1,5 @@
 import { BootMixin } from '@loopback/boot';
-import { ApplicationConfig } from '@loopback/core';
+import { ApplicationConfig, BindingKey } from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -8,10 +8,9 @@ import { RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import * as path from 'path';
-import { MySequence } from './sequence';
+import { MyAuthenticationSequence } from './sequence';
 import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
 import { JWTAuthenticationStrategy } from './authentication-strategies';
-import { Services } from './enums';
 import { JWTService } from './services/jwt.service';
 
 import {
@@ -26,16 +25,24 @@ import { BcryptHasher } from './services/hash.password.bcryptjs';
 import { MyUserService } from './services/user-service';
 
 
+// export interface PackageInfo {
+//   name: string;
+//   version: string;
+//   description: string;
+// }
+
+// export const PackageKey = BindingKey.create<PackageInfo>('application.package');
+
+// const pkg: PackageInfo = require('../package.json');
+
 export class MeuIngressoApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
 
-  private readonly JWT_SECRET = process.env.SECRET || 'chave-criptografica-super-secreta';
-
-  constructor(options: ApplicationConfig = {}) {
+  constructor(options?: ApplicationConfig) {
     super(options);
 
-    this.configureServiceBindings();
+    this.setUpBindings();
 
     // Autenticação
     this.component(AuthenticationComponent);
@@ -43,7 +50,7 @@ export class MeuIngressoApplication extends BootMixin(
     registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
     // Set up the custom sequence
-    this.sequence(MySequence);
+    this.sequence(MyAuthenticationSequence);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
@@ -56,7 +63,7 @@ export class MeuIngressoApplication extends BootMixin(
     this.api({
       openapi: '3.0.0',
       info: {
-        title: 'ibm-orchestrator-api',
+        title: 'lb4-with-password-api',
         version: '1.0.0',
       },
       schemes: ['http', 'https'],
@@ -86,7 +93,10 @@ export class MeuIngressoApplication extends BootMixin(
     };
   }
 
-  private configureServiceBindings() {
+  setUpBindings(): void {
+    // Bind package.json to the application context
+    // this.bind(PackageKey).to(pkg);
+
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );
@@ -94,7 +104,8 @@ export class MeuIngressoApplication extends BootMixin(
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
-    this.bind(Services.TOKEN_SERVICE).toClass(JWTService);
+
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
     // // Bind bcrypt hash services
     this.bind(PasswordHasherBindings.ROUNDS).to(10);

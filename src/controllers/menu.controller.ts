@@ -54,7 +54,6 @@ export class MenuController {
     return this.menuRepository.create(menu);
   }
 
-  @authenticate('jwt')
   @get('/menus/count', {
     responses: {
       '200': {
@@ -63,6 +62,7 @@ export class MenuController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
     @param.query.object('where', getWhereSchemaFor(Menu)) where?: Where<Menu>,
   ): Promise<Count> {

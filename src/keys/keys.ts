@@ -1,19 +1,14 @@
+
 import { BindingKey } from '@loopback/context';
-import { JWTService } from '../services/jwt.service';
-import { UserRepository } from '../repositories/user.repository';
+import { PasswordHasher } from '../services/hash.password.bcryptjs';
 import { TokenService, UserService } from '@loopback/authentication';
 import { User } from '../models';
 import { Credentials } from '../repositories';
-import { PasswordHasher } from '../services/hash.password.bcryptjs';
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = 'myjwts3cr3t';
   export const TOKEN_EXPIRES_IN_VALUE = '600';
 }
-
-export const USER_REPO = BindingKey.create<UserRepository>(
-  'authentication.user.repo',
-);
 
 export namespace TokenServiceBindings {
   export const TOKEN_SECRET = BindingKey.create<string>(
@@ -33,6 +28,7 @@ export namespace PasswordHasherBindings {
   );
   export const ROUNDS = BindingKey.create<number>('services.hasher.round');
 }
+
 export namespace UserServiceBindings {
   export const USER_SERVICE = BindingKey.create<UserService<User, Credentials>>(
     'services.user.service',
