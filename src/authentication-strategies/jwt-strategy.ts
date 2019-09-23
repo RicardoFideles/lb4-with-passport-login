@@ -1,20 +1,16 @@
-import { inject } from "@loopback/core";
-import {
-  AuthenticationStrategy,
-  TokenService,
-} from '@loopback/authentication';
+import { inject } from '@loopback/context';
+import { HttpErrors, Request } from '@loopback/rest';
 import { UserProfile } from '@loopback/security';
-import * as JwtStrategy from 'passport-jwt';
-import { Request } from "express-serve-static-core";
-import { HttpErrors } from "@loopback/rest";
-import { Services } from "../enums";
+import { AuthenticationStrategy } from '@loopback/authentication';
+import { TokenServiceBindings } from '../keys/keys';
+import { JWTService } from '../services/jwt.service';
 
 export class JWTAuthenticationStrategy implements AuthenticationStrategy {
-  private ExtractJWT = JwtStrategy.ExtractJwt;
-  name: string = 'JwtStrategy';
+  name = 'jwt';
 
   constructor(
-    @inject(Services.TOKEN_SERVICE) public tokenService: TokenService,
+    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    public tokenService: JWTService,
   ) { }
 
   async authenticate(request: Request): Promise<UserProfile | undefined> {

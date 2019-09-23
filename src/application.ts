@@ -14,7 +14,16 @@ import { JWTAuthenticationStrategy } from './authentication-strategies';
 import { Services } from './enums';
 import { JWTService } from './services/jwt.service';
 
+import {
+  TokenServiceBindings,
+  UserServiceBindings,
+  TokenServiceConstants,
+  PasswordHasherBindings
+} from './keys/keys';
 
+import { BcryptHasher } from './services/hash.password.bcryptjs';
+
+import { MyUserService } from './services/user-service';
 
 
 export class MeuIngressoApplication extends BootMixin(
@@ -26,10 +35,12 @@ export class MeuIngressoApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    this.configureServiceBindings();
+
     // Autenticação
     this.component(AuthenticationComponent);
-    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
+    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -63,8 +74,6 @@ export class MeuIngressoApplication extends BootMixin(
       paths: {},
     });
 
-    this.configureServiceBindings();
-
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
@@ -78,7 +87,20 @@ export class MeuIngressoApplication extends BootMixin(
   }
 
   private configureServiceBindings() {
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+      TokenServiceConstants.TOKEN_SECRET_VALUE,
+    );
+
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    );
     this.bind(Services.TOKEN_SERVICE).toClass(JWTService);
+
+    // // Bind bcrypt hash services
+    this.bind(PasswordHasherBindings.ROUNDS).to(10);
+    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
   }
 
 

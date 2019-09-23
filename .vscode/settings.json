@@ -14,6 +14,7 @@
 		"**/CVS": true,
 		"dist": true,
 	},
+	"path-intellisense.extensionOnImport": true,
 	"files.insertFinalNewline": true,
 	"files.trimTrailingWhitespace": true,
 	"typescript.tsdk": "./node_modules/typescript/lib",

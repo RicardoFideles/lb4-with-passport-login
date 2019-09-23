@@ -43,7 +43,7 @@ export class PingController {
   ) { }
 
   // Map to `GET /ping`
-  @authenticate('JwtStrategy')
+  @authenticate('jwt')
   @get('/ping', {
     responses: {
       '200': PING_RESPONSE,

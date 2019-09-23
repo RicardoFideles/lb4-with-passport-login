@@ -22,15 +22,17 @@ import { MenuRepository } from '../repositories';
 import { classRolesAllowed } from '../decorators';
 import { UserRole } from '../enums';
 import { AuthenticationBindings, authenticate } from '@loopback/authentication';
-import { UserProfile } from '@loopback/security';
+import { UserProfile, securityId, SecurityBindings } from '@loopback/security';
 
-@classRolesAllowed({ roles: [UserRole.GUEST] })
+
+// @classRolesAllowed({ roles: [UserRole.ROOT] })
 export class MenuController {
   constructor(
     @repository(MenuRepository)
     public menuRepository: MenuRepository,
   ) { }
 
+  @authenticate('jwt')
   @post('/menus', {
     responses: {
       '200': {
@@ -52,6 +54,7 @@ export class MenuController {
     return this.menuRepository.create(menu);
   }
 
+  @authenticate('jwt')
   @get('/menus/count', {
     responses: {
       '200': {
@@ -66,7 +69,7 @@ export class MenuController {
     return this.menuRepository.count(where);
   }
 
-  @authenticate('JwtStrategy')
+  @authenticate('jwt')
   @get('/menus', {
     responses: {
       '200': {
@@ -85,6 +88,7 @@ export class MenuController {
     return this.menuRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/menus', {
     responses: {
       '200': {
@@ -107,6 +111,7 @@ export class MenuController {
     return this.menuRepository.updateAll(menu, where);
   }
 
+  @authenticate('jwt')
   @get('/menus/{id}', {
     responses: {
       '200': {
@@ -119,6 +124,7 @@ export class MenuController {
     return this.menuRepository.findById(id);
   }
 
+  @authenticate('jwt')
   @patch('/menus/{id}', {
     responses: {
       '204': {
@@ -140,6 +146,7 @@ export class MenuController {
     await this.menuRepository.updateById(id, menu);
   }
 
+  @authenticate('jwt')
   @put('/menus/{id}', {
     responses: {
       '204': {
@@ -154,6 +161,7 @@ export class MenuController {
     await this.menuRepository.replaceById(id, menu);
   }
 
+  @authenticate('jwt')
   @del('/menus/{id}', {
     responses: {
       '204': {
