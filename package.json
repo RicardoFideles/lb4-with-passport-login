@@ -61,7 +61,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.1.0",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^5.1.0",
+    "log4js": "^6.4.0",
     "loopback-connector-mongodb": "^5.0.1",
     "moment": "^2.24.0",
     "passport": "^0.4.0",
